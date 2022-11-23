@@ -14,4 +14,7 @@ struct Product: Identifiable
     var quantity : Int
     var image : String
     var price : Int
+    var description: String
+    var dimension: String
+    var sound : String
 }

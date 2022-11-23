@@ -23,7 +23,7 @@ struct ContentView: View {
                 .tabItem
             {
                     Label("", systemImage: "magnifyingglass")
-                
+                    
             }
             SettingView()
                 .tabItem

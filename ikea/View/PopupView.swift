@@ -6,9 +6,15 @@
 //
 
 import SwiftUI
+import SceneKit
+import AVKit
+import AVFoundation
+var player : AVAudioPlayer!
 
 struct PopupView: View {
-    
+    @State var isFlagged = false
+    @State var isFlaggedSecondToggle = false
+    @State var audioPlayer: AVAudioPlayer!
     @Environment(\.colorScheme) var colorScheme
     @Binding var isShowing : Bool
 //    @State var productScan : Product
@@ -24,8 +30,12 @@ struct PopupView: View {
         return max(0, min(1,res))
     }
     
+
+    
     var body: some View
     {
+        
+        
         ZStack(alignment: .bottom)
         {
             if isShowing
@@ -33,8 +43,9 @@ struct PopupView: View {
                 Color.black
                     .opacity(startOpacity + (endOpacity - startOpacity) * percentage)
                     .ignoresSafeArea()
-                    .onTapGesture{
-                    isShowing = false
+                    .onTapGesture
+                    {
+                        isShowing = false
                     }
                 
                 mainView
@@ -49,24 +60,136 @@ struct PopupView: View {
     
     var mainView : some View
     {
-        VStack
+       
+         
+        VStack(alignment: .leading)
         {
+            
             ZStack
             {
                 Capsule()
                     .frame(width: 40,height: 6)
             }
-            .frame(height: 40)
+            .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(Color.white.opacity(0.00001))
             .gesture(dragGesture)
             
+        ScrollView(.vertical, showsIndicators: false)
+        {
+            VStack
+            {
+                Text("GOTTA CATCH' EM All")
+                    .font(.title)
+                    .bold()
+                    .frame(maxWidth: .infinity,alignment: .leading)
+                    .padding()
+                Spacer(minLength: 30)
+            
             ZStack
             {
-                VStack
+                
+                
+                VStack(alignment: .center,spacing: 10)
                 {
-                    Text("Ciccio bello")
-                    Text("Ciccio bello 2")
+                    
+                    let prodottoScannerizzato = products.ScannedProduct()
+                    
+                    Text(prodottoScannerizzato.name)
+                        .font(.title2)
+                        .ignoresSafeArea(.all)
+                        .frame(maxWidth: .infinity ,alignment: .leading)
+                        .padding()
+                        .offset(x:0,y: -40)
+                
+                    SceneView(scene: SCNScene(named: prodottoScannerizzato.image),options: [.autoenablesDefaultLighting,.allowsCameraControl])
+                        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height / 4)
+                    
+                    Spacer(minLength: 0)
+                    
+                    Toggle(isOn: $isFlagged) {
+                        Label("PRICE", systemImage: "dollarsign.circle")
+                    }
+                    .toggleStyle(.switch)
+                    .padding()
+                    .tint(.blue)
+                    .bold()
+                    
+                    if isFlagged
+                    {
+                        Text("This item has no value, it is Legendary")
+                            .font(.subheadline)
+                            .frame(alignment : .leading)
+                            .offset(x: -40 , y: 0)
+                        Divider()
+                            .padding()
+                    }
+                    
+                    
+                    Toggle(isOn: $isFlaggedSecondToggle) {
+                        Label("SIZE", systemImage: "arrow.up.left.and.arrow.down.right.circle")
+                    }
+                    .toggleStyle(.switch)
+                    .padding()
+                    .tint(.blue)
+                    .bold()
+                    
+                    if isFlaggedSecondToggle
+                    {
+                        
+                        Text(prodottoScannerizzato.dimension)
+                            .font(.subheadline)
+                            .frame(alignment : .leading)
+                            .offset(x: -151 , y: 0)
+                        Divider()
+                            .padding()
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    VStack(alignment: .leading,spacing: 15)
+                    {
+                        HStack(spacing : 200)
+                        {
+                            Text("Other info:")
+                                .bold()
+                                .font(.title3)
+                            
+                            Button(action:{
+                                self.PlaySound(prodottoScannerizzato: prodottoScannerizzato)
+                            },label: {
+                                Image(systemName: "play")
+                                    .foregroundColor(.white)
+                                    .padding(.vertical,20)
+                                    .padding(.horizontal,20)
+                                    .background(Color.blue)
+                                    .cornerRadius(50)
+                                
+                            })
+                        }
+                        
+                        Text(prodottoScannerizzato.description)
+                            .font(.subheadline)
+                        
+                        
+                        
+                        //Spacer(minLength: -80)
+                        Text("Add To Cart")
+                            .foregroundColor(.white)
+                            .padding(.vertical,15)
+                            .padding(.horizontal,130)
+                            .background(Color.blue)
+                            .cornerRadius(50)
+                            .frame(alignment: .center)
+                        Spacer(minLength: 50)
+                    }
+                    .padding()
+                }
+                    }
                 }
                 .padding(.horizontal, 30)
             }
@@ -80,9 +203,9 @@ struct PopupView: View {
                 
                 ZStack
                 {
-                    RoundedRectangle(cornerRadius: 30)
+                    RoundedRectangle(cornerRadius: 0)
                     Rectangle()
-                        .frame(height: curHeight/2)
+                        .frame(height: curHeight / 2)
                 }
                 .foregroundColor(.white)
                 )
@@ -93,6 +216,24 @@ struct PopupView: View {
                 }
     }
     
+    // FUNZIONE PER IL PLAY SOUND
+    
+    func PlaySound(prodottoScannerizzato : Product)
+    {
+        let url = Bundle.main.url(forResource: prodottoScannerizzato.sound, withExtension: "m4a")
+        guard url != nil else
+        {
+            return
+        }
+        do{
+            player = try AVAudioPlayer(contentsOf: url!)
+            player?.play()
+        }catch
+        {
+            print("error")
+        }
+    }
+
     
     @State private var prevDragTranslation = CGSize.zero
     var dragGesture : some Gesture
@@ -131,6 +272,8 @@ struct PopupView: View {
     }
     
 }
+
+
 
 struct PopupView_Previews: PreviewProvider {
     static var previews: some View {

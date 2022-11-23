@@ -16,7 +16,7 @@ struct SettingView: View
     @State var onClick = false
     @State var clickedButtonToResetToggle = false
     @State var isPresentingScanner = false
-    @State var scannedCode: String = "Scan a BarCode to get a started"
+    @State var scannedCode: String = ""
     
     
     var support = IkeaModel()
@@ -30,70 +30,71 @@ struct SettingView: View
                 if case let .success(code) = result
                     {
                     self.scannedCode = code.string
+                    products.testo = scannedCode
                     self.isPresentingScanner = false
                     }
                 })
     }
 
-    var products = IkeaModel()
+    
     
     
     var body: some View
     {
-        
+        NavigationStack()
+        {
             ScrollView(.vertical, showsIndicators: false)
             {
-                    Spacer(minLength: 40)
-                    VStack(alignment: .leading, spacing: 30)
+                Spacer(minLength: 40)
+                VStack(alignment: .leading, spacing: 30)
+                {
+                    Text("Welcome to IKEA!")
+                        .font(.title2)
+                        .bold()
+                    
+                    Text("Sign up or log in to access special discounts, yout favourites and yout IKEA Family card.")
+                        .font(.subheadline)
+                    
+                    Text("IKEA for Business")
+                        .font(.subheadline)
+                    
+                    
+                    
+                    // BOTTONI PER LOGIN
+                    
+                    
+                    HStack(alignment: .center)
                     {
-                        Text("Benvenuto in IKEA!")
-                            .font(.title2)
-                            .bold()
-                        
-                        Text("Iscriviti o accedi per usufruire di sconti speciali, accedere ai tuoi preferiti e usare la tua carta IKEA Family")
-                            .font(.subheadline)
-                        
-                        Text("Pagina IKEA Business Network")
-                            .font(.subheadline)
-                        
-                       
-                        
-                        // BOTTONI PER LOGIN
-                        
-                        
-                        HStack(alignment: .center)
+                        NavigationLink(destination: SplashScreen())
                         {
-                            NavigationLink(destination: SplashScreen())
-                            {
-                                Text("Iscriviti")
-                                
-                                    .colorInvert()
-                                    .foregroundColor(.white)
-                                    .padding(.vertical,15)
-                                    .padding(.horizontal,60)
-                                    .background(Color.white)
-                                    .cornerRadius(50)
-                                
-                            }.overlay(
-                                RoundedRectangle(cornerRadius: 50)
-                                    .stroke(Color.gray, lineWidth: 1))
+                            Text("Log in")
+                                .colorInvert()
+                                .foregroundColor(.white)
+                                .padding(.vertical,15)
+                                .padding(.horizontal,60)
+                                .background(Color.white)
+                                .cornerRadius(50)
                             
-                            NavigationLink(destination: SplashScreen())
-                            {
-                                Text("Accedi")
-                                    .foregroundColor(.white)
-                                    .padding(.vertical,15)
-                                    .padding(.horizontal,60)
-                                    .background(Color.blue)
-                                    .cornerRadius(50)
-                            }
-                        }.frame(alignment: .center)
+                        }.overlay(
+                            RoundedRectangle(cornerRadius: 50)
+                                .stroke(Color.gray, lineWidth: 1))
                         
-                        Text("Shop & Go")
-                            .font(.subheadline)
-                            .bold()
-                    }
- 
+                        NavigationLink(destination: SplashScreen())
+                        {
+                            Text("Sign up")
+                                .foregroundColor(.white)
+                                .padding(.vertical,15)
+                                .padding(.horizontal,60)
+                                .background(Color.blue)
+                                .cornerRadius(50)
+                        }
+                    }.frame(alignment: .center)
+                    
+                    Text("Shop & Go")
+                        .font(.subheadline)
+                        .bold()
+                }
+                
                 
                 VStack(alignment: .leading, spacing: 30)
                 {
@@ -105,11 +106,11 @@ struct SettingView: View
                                 
                                 VStack(alignment: .leading){
                                     
-                                    Text("Scansiona i prodotti in negozio")
+                                    Text("Scan items in-store")
                                         .font(.subheadline)
                                         .bold()
                                     
-                                    Text("Scansonami i prodotti e salta la coda alla cassa ")
+                                    Text("Scan items and skip the queue at the checkout")
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
                                 }
@@ -127,110 +128,144 @@ struct SettingView: View
                                 }
                                 
                             }
-                        }
+                        }.tint(.blue)
                     }.frame(width:355)
                     Divider()
                     
+                    if showCam
+                    {
+                        selectedShop
+                    }
                     
+                    Spacer()
+                    
+                   
                         
-                        Text("La tua IKEA")
-                            .font(.subheadline)
-                            .bold()
-                        
-                        VStack(spacing: 40)
-                        {
-                            
-                            
-                            HStack(spacing: 260)
+// YOUR IKEA SECTION NAVIGATION VIEW
+                    
+                Text("Your IKEA")
+                    .font(.subheadline)
+                    .bold()
+                    
+                Spacer(minLength: -10)
+                VStack(alignment: .leading ,spacing: 40)
+                {
+                    ForEach (0..<support.yourIkeaText.count)
+                    {
+                        index in
+                            HStack
                             {
-                                Label("Napoli",systemImage: "map")
-                                
-                                Image(systemName: "arrow.right")
+                                NavigationLink(destination: SettingView())
+                                {
+                                    Label(support.yourIkeaText[index], systemImage:support.youtIkeaIcon[index])
+                                    Spacer()
+                                    
+                                    if colorScheme == .light{
+                                        Image("arrow")
+                                            .resizable()
+                                            .frame(width: 15,height: 15,alignment: .trailing)
+                                    }
+                                    else
+                                    {
+                                        Image("arrow.darkmode")
+                                            .resizable()
+                                            .frame(width: 15,height: 15,alignment: .trailing)
+                                    }
+                                }
                             }
-                            Divider()
-                            
-                            HStack(spacing: 250)
-                            {
-                                Label("Carrello",systemImage: "cart")
-                                
-                                Image(systemName: "arrow.right")
-                            }
-                            Divider()
-                            
-                            HStack(spacing: 70)
-                            {
-                                Label("Carte regalo e carte di rimborso",systemImage: "gift")
-                                
-                                Image(systemName: "arrow.right")
-                            }
-                            Divider()
-                            
+                        Divider()
                             
                         }
-                        
-                        Text("Impostazione dell'app")
+                
+// YOUR IKEA SETTING NAVIGATION VIEW
+                        Text("Settings")
                             .font(.subheadline)
                             .bold()
+                    Spacer(minLength: -20)
                         
-                        VStack(spacing: 40)
+                    ForEach(0..<support.settingText.count)
+                    {
+                        index in
+                        HStack
                         {
-                            
-                            
-                            HStack(spacing: 190)
+                            NavigationLink(destination: SettingView())
                             {
-                                Label("Preferenza dati",systemImage: "lock")
-                                
-                                Image(systemName: "arrow.right")
+                                Label(support.settingText[index],systemImage: support.settingIcon[index])
+                                Spacer()
+                                if colorScheme == .light{
+                                    Image("arrow")
+                                        .resizable()
+                                        .frame(width: 15,height: 15,alignment: .trailing)
+                                }
+                                else
+                                {
+                                    Image("arrow.darkmode")
+                                        .resizable()
+                                        .frame(width: 15,height: 15,alignment: .trailing)
+                                }
                             }
-                            Divider()
                             
-                            HStack(spacing: 180)
-                            {
-                                Label("Lingue e regione",systemImage: "globe")
-                                
-                                Image(systemName: "arrow.right")
-                            }
-                            Divider()
                         }
+                        Divider()
+                    }
                         
-                    Text("Informazioni e supporto IKEA")
-                        .font(.subheadline)
-                        .bold()
+                        
+                    
+                    
+//IKEA INFORMATION SUPPORT TEXT
+                        Text("IKEA information and support")
+                            .font(.subheadline)
+                            .bold()
+                    }
                 }
-                Spacer(minLength: 40)
+            
+                Spacer(minLength: 60)
                 VStack(alignment: .leading, spacing: 40)
                 {
                     ForEach(0..<support.supportText.count)
                     {
                         index in
-                        Text(support.supportText[index])
-                        Divider()
-                    }
                         
+                        HStack
+                        {
+                            NavigationLink(destination: SettingView())
+                            {
+                                Text(support.supportText[index])
+                                Spacer()
+                                if colorScheme == .light{
+                                    Image("arrow")
+                                        .resizable()
+                                        .frame(width: 15,height: 15,alignment: .trailing)
+                                }
+                                else
+                                {
+                                    Image("arrow.darkmode")
+                                        .resizable()
+                                        .frame(width: 15,height: 15,alignment: .trailing)
+                                }
+                                    
+                            }
+                           
+                        }
+                        Divider()
+
+                    }
                     
                 }
-                
             }.frame(width:360)
-        
-//            productScan = ScannedProduct(products: products,scannedCode: scannedCode)
+            
+            
             //FUNZIONE PER ATTIVARE IL BOTTONE IN CASO DI FLAG ATTIVA
-            .safeAreaInset(edge: .bottom)
+                .safeAreaInset(edge: .bottom)
             {
                 floatingButton
-               
                 
-                if showPopup
+                
+                if showPopup && scannedCode != ""
                 {
-                    ZStack{
+                    ZStack
+                    {
                         PopupView(isShowing: $showPopup)
-                        
-                        // vedere come spegnere toggle una volta che si apre la popupview
-                        
-                        
-//                            .onChange(of: showCam == false, perform: {
-//                                value in
-//                                print(showCam)
-//                            })
                     }
                 }
             }
@@ -244,19 +279,18 @@ struct SettingView: View
                     
                 }.frame(maxWidth: .infinity,maxHeight: 15)
             }
-        
+            
             // Cambio il valore di onClick in modo che se ho avviato l'azione di scan tramite questa booleana faccio aprire la view del popup
-        
+            
             .onChange(of: onClick == true, perform: {
                 value in
                 print(onClick)
             })
             // chiamo la funzione per lo scan del prodotto che restituisce l'immagine del prodotto che ho trovato nel db in questo caso prova con https://www.google.com per far apparire lugia
-            
-             
+        }
     }
     
-    // CHECK BUTTON IN VARIUS MODE
+    
     
     var floatingButton: some View
     {
@@ -277,7 +311,7 @@ struct SettingView: View
                     {
                         HStack(spacing: 100)
                         {
-                            Text("Scansiona i prodotti")
+                            Text("Scan items")
                             Image(systemName: "barcode.viewfinder")
                                 .resizable()
                                 .frame(width: 25,height: 25)
@@ -291,7 +325,7 @@ struct SettingView: View
                     {
                         HStack(spacing: 100)
                         {
-                            Text("Scansiona i prodotti")
+                            Text("Scan items")
                                 
                             Image(systemName: "barcode.viewfinder")
                                 .resizable()
@@ -311,29 +345,40 @@ struct SettingView: View
                 }
                 
             }
-        }
+        }.padding()
     }
-}
-
-
-func ScannedProduct(products : IkeaModel, scannedCode: String) // -> Product
-{
     
-    
-    
-    ForEach(0..<products.products.count)
+    var selectedShop : some View
     {
-        product in
-        
-        if(scannedCode == products.products[product].id)
+        NavigationStack
         {
-            Image(products.products[product].image)
-            //let productScanned = products.products[product]
+            HStack()
+            {
+                Text("Selected Shop")
+                    .font(.subheadline)
+                    .bold()
+                Spacer(minLength: 50)
+                Text("Naples")
+                    .font(.subheadline)
+                
+                if colorScheme == .light{
+                    Image("arrow")
+                        .resizable()
+                        .frame(width: 15,height: 15,alignment: .trailing)
+                }
+                else
+                {
+                    Image("arrow.darkmode")
+                        .resizable()
+                        .frame(width: 15,height: 15,alignment: .trailing)
+                }
+                    
+            }
         }
     }
-    
-    // return productScanned but da errore
 }
+
+
 
 
 
