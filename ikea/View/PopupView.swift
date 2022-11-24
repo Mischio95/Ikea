@@ -161,6 +161,8 @@ struct PopupView: View {
                             
                             Button(action:{
                                 self.PlaySound(prodottoScannerizzato: prodottoScannerizzato)
+                                let impact = UIImpactFeedbackGenerator(style: .heavy)
+                                  impact.impactOccurred()
                             },label: {
                                 Image(systemName: "play")
                                     .foregroundColor(.white)

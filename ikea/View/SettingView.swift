@@ -300,6 +300,8 @@ struct SettingView: View
             {
                 Button(action:
                     {
+                    let impact = UIImpactFeedbackGenerator(style: .heavy)
+                      impact.impactOccurred()
                     isPresentingScanner = true
                     self.showPopup = true
                     onClick = true
@@ -347,6 +349,13 @@ struct SettingView: View
             }
         }.padding()
     }
+    
+    func hapticFeedbackOnTap(style: UIImpactFeedbackGenerator.FeedbackStyle = .light) -> some View {
+        self.onTapGesture {
+          let impact = UIImpactFeedbackGenerator(style: style)
+          impact.impactOccurred()
+        }
+      }
     
     var selectedShop : some View
     {
